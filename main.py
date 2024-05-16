@@ -319,7 +319,8 @@ def work_on_input(input_index):
         if type(list(input_data_dict["connections"].values())[n]) is str:
             indexes_to_connect = [int(num) - 1 for num in list(input_data_dict["connections"].values())[n].split("-")]
             for dot_rect_index in indexes_to_connect:
-                if not ([n, dot_rect_index] in new_connections or [dot_rect_index, n] in new_connections):
+                if not (n == dot_rect_index or
+                        [n, dot_rect_index] in new_connections or [dot_rect_index, n] in new_connections):
                     new_connections.append([n, dot_rect_index])
     return ([new_max_value, new_x_axes_alpha, new_y_axes_alpha, new_z_axes_alpha, new_3d_positions, new_connections],
             input_index)

@@ -208,13 +208,8 @@ class Axes:
         self.slope = 90
 
     def set_positions(self, alpha):
-        t = math.tan(alpha * math.pi / 180)
-        exact_x = self.radius / (t ** 2 + 1) ** .5
-        x = round(exact_x)
-        y = round(exact_x * t)
-        if 90 < alpha % 360 < 270:
-            x *= -1
-            y *= -1
+        x = self.radius * math.cos(alpha * math.pi / 180)
+        y = self.radius * math.sin(alpha * math.pi / 180)
         start_x = self.center_x - x
         start_y = self.center_y + y
         end_x = self.center_x + x
@@ -361,31 +356,16 @@ def save_as_output(dot_rect_num, connections_with_nums, x_positions, y_positions
 def produce_2d_pos_from_3d_pos(x, y, z, x_alpha, y_alpha, z_alpha, max_value):
 
     x_radius = x * AXES_LENGTH / (max_value * 2)
-    x_tan = math.tan(x_alpha * math.pi / 180)
-    x_exact_x = x_radius / (x_tan ** 2 + 1) ** .5
-    x_x_add_value = round(x_exact_x)
-    x_y_add_value = round(x_exact_x * x_tan)
-    if 90 < x_alpha % 360 <= 270:
-        x_x_add_value *= -1
-        x_y_add_value *= -1
+    x_x_add_value = round(x_radius * math.cos(x_alpha * math.pi / 180))
+    x_y_add_value = round(x_radius * math.sin(x_alpha * math.pi / 180))
 
     y_radius = y * AXES_LENGTH / (max_value * 2)
-    y_tan = math.tan(y_alpha * math.pi / 180)
-    y_exact_x = y_radius / (y_tan ** 2 + 1) ** .5
-    y_x_add_value = round(y_exact_x)
-    y_y_add_value = round(y_exact_x * y_tan)
-    if 90 < y_alpha % 360 <= 270:
-        y_x_add_value *= -1
-        y_y_add_value *= -1
+    y_x_add_value = round(y_radius * math.cos(y_alpha * math.pi / 180))
+    y_y_add_value = round(y_radius * math.sin(y_alpha * math.pi / 180))
 
     z_radius = z * AXES_LENGTH / (max_value * 2)
-    z_tan = math.tan(z_alpha * math.pi / 180)
-    z_exact_x = z_radius / (z_tan ** 2 + 1) ** .5
-    z_x_add_value = round(z_exact_x)
-    z_y_add_value = round(z_exact_x * z_tan)
-    if 90 < z_alpha % 360 <= 270:
-        z_x_add_value *= -1
-        z_y_add_value *= -1
+    z_x_add_value = round(z_radius * math.cos(z_alpha * math.pi / 180))
+    z_y_add_value = round(z_radius * math.sin(z_alpha * math.pi / 180))
 
     second_dimensional_x_pos = GRAPH_CENTER_X + x_x_add_value + y_x_add_value + z_x_add_value
     second_dimensional_y_pos = GRAPH_CENTER_Y - x_y_add_value - y_y_add_value - z_y_add_value
@@ -397,13 +377,8 @@ def produce_dot_rect_positions(num_rects):
     alpha_sequence = 360 / num_rects
     current_alpha = 90
     for _ in range(num_rects):
-        t = math.tan(current_alpha * math.pi / 180)
-        exact_x = RECTS_CIRCLE_RADIUS / (t ** 2 + 1) ** .5
-        x = round(exact_x)
-        y = round(exact_x * t)
-        if 90 < current_alpha % 360 <= 270:
-            x *= -1
-            y *= -1
+        x = round(RECTS_CIRCLE_RADIUS * math.cos(current_alpha * math.pi / 180))
+        y = round(RECTS_CIRCLE_RADIUS * math.sin(current_alpha * math.pi / 180))
         the_dot_rect_positions.append((RECTS_CENTER_X + x, RECTS_CENTER_Y - y))
         current_alpha += alpha_sequence
     return the_dot_rect_positions

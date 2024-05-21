@@ -1,7 +1,6 @@
 import os
 import pandas
 import math
-from sys import exit
 import pygame
 
 pygame.init()

@@ -6,6 +6,16 @@ import pygame
 pygame.init()
 
 W = 1280
+
+AXES_LENGTH, AXES_THICKNESS = W // 4, W // 256
+GRAPH_CENTER_X, GRAPH_CENTER_Y = 9 * W // 32, 9 * W // 32
+RECTS_CENTER_X, RECTS_CENTER_Y = 25 * W // 32, 3 * W // 16
+RECTS_CIRCLE_RADIUS, RECT_WIDTH = 9 * W // 64, W // 64
+
+GUI_FONT_SMALL = pygame.font.Font(None, W // 64)
+GUI_FONT_MEDIUM = pygame.font.Font(None, 3 * W // 128)
+GUI_FONT_LARGE = pygame.font.Font(None, W // 32)
+
 BG_COLOR, BG_PANEL_COLOR = (191, 191, 191), (127, 127, 127)
 BUTTON_COLOR_1_1, BUTTON_COLOR_1_2 = (175, 175, 175), (167, 167, 167)
 BUTTON_COLOR_2_1, BUTTON_COLOR_2_2 = (143, 143, 143), (135, 135, 135)
@@ -18,19 +28,11 @@ DOT_COLOR, DOT_CHOSEN_COLOR = (191, 63, 63), (223, 127, 0)
 
 OUTPUTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'outputs')
 USER_INPUTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'user_inputs')
+# if not os.path.exists(OUTPUTS_DIR): os.makedirs(OUTPUTS_DIR)
 
-AXES_LENGTH, AXES_THICKNESS = W // 4, W // 256
-GRAPH_CENTER_X, GRAPH_CENTER_Y = 9 * W // 32, 9 * W // 32
-RECTS_CENTER_X, RECTS_CENTER_Y = 25 * W // 32, 3 * W // 16
-RECTS_CIRCLE_RADIUS, RECT_WIDTH = 9 * W // 64, W // 64
-
-gui_font_small = pygame.font.Font(None, W // 64)
-gui_font_medium = pygame.font.Font(None, 3 * W // 128)
-gui_font_large = pygame.font.Font(None, W // 32)
-
-screen = pygame.display.set_mode((W, 9 * W // 16))
+SCREEN = pygame.display.set_mode((W, 9 * W // 16))
+CLOCK = pygame.time.Clock()
 pygame.display.set_caption("Third Dimensional Graph Visualiser")
-clock = pygame.time.Clock()
 
 bg_panel_rect = pygame.rect.Rect(9 * W // 16, 0, 7 * W // 16, 9 * W // 16)
 
@@ -82,21 +84,21 @@ class Button:
         self.surface.blit(self.text_surf, self.text_rect)
 
 
-button_hide_graph = Button(screen, "Hide Graph", gui_font_small, W // 32, W // 32, W // 16, W // 32,
+button_hide_graph = Button(SCREEN, "Hide Graph", GUI_FONT_SMALL, W // 32, W // 32, W // 16, W // 32,
                            BUTTON_COLOR_1_1, BUTTON_COLOR_1_2, TEXT_COLOR_1, W // 128)
-button_hide_dots = Button(screen, "Hide Dots", gui_font_small, W // 32, 5 * W // 64, W // 16, W // 32,
+button_hide_dots = Button(SCREEN, "Hide Dots", GUI_FONT_SMALL, W // 32, 5 * W // 64, W // 16, W // 32,
                           BUTTON_COLOR_1_1, BUTTON_COLOR_1_2, TEXT_COLOR_1, W // 128)
-button_reset_graph = Button(screen, "Reset Graph", gui_font_small, 7 * W // 64, W // 32, W // 16, W // 32,
+button_reset_graph = Button(SCREEN, "Reset Graph", GUI_FONT_SMALL, 7 * W // 64, W // 32, W // 16, W // 32,
                             BUTTON_COLOR_1_1, BUTTON_COLOR_1_2, TEXT_COLOR_1, W // 128)
-button_reset_all = Button(screen, "Reset All", gui_font_small, 25 * W // 64, W // 32, W // 16, W // 32,
+button_reset_all = Button(SCREEN, "Reset All", GUI_FONT_SMALL, 25 * W // 64, W // 32, W // 16, W // 32,
                           BUTTON_COLOR_1_1, BUTTON_COLOR_1_2, TEXT_COLOR_1, W // 128)
-button_get_input = Button(screen, "Get Input", gui_font_small, 15 * W // 32, W // 32, W // 16, W // 32,
+button_get_input = Button(SCREEN, "Get Input", GUI_FONT_SMALL, 15 * W // 32, W // 32, W // 16, W // 32,
                           BUTTON_COLOR_1_1, BUTTON_COLOR_1_2, TEXT_COLOR_1, W // 128)
-button_save_data = Button(screen, "Save Data", gui_font_small, 15 * W // 32, 5 * W // 64, W // 16, W // 32,
+button_save_data = Button(SCREEN, "Save Data", GUI_FONT_SMALL, 15 * W // 32, 5 * W // 64, W // 16, W // 32,
                           BUTTON_COLOR_1_1, BUTTON_COLOR_1_2, TEXT_COLOR_1, W // 128)
-button_new_dot = Button(screen, "New Dot", gui_font_medium, 39 * W // 64,  7 * W // 16, 3 * W // 32, W // 32,
+button_new_dot = Button(SCREEN, "New Dot", GUI_FONT_MEDIUM, 39 * W // 64,  7 * W // 16, 3 * W // 32, W // 32,
                         BUTTON_COLOR_2_1, BUTTON_COLOR_2_2, TEXT_COLOR_2, W // 128)
-button_remove = Button(screen, "Remove", gui_font_medium, 39 * W // 64, W // 2, 3 * W // 32, W // 32,
+button_remove = Button(SCREEN, "Remove", GUI_FONT_MEDIUM, 39 * W // 64, W // 2, 3 * W // 32, W // 32,
                        BUTTON_COLOR_2_1, BUTTON_COLOR_2_2, TEXT_COLOR_2, W // 128)
 
 
@@ -170,19 +172,19 @@ class Slider:
                            (self.controller_x, self.controller_y), self.circle_radius)
 
 
-slider_max_value = Slider(screen, 4, 80, 4, W // 32, 33 * W // 64, W // 8, 3 * W // 320,
+slider_max_value = Slider(SCREEN, 4, 80, 4, W // 32, 33 * W // 64, W // 8, 3 * W // 320,
                           BUTTON_COLOR_1_1, BUTTON_COLOR_1_2, TEXT_COLOR_1)
-slider_x_axes_alpha = Slider(screen, 0, 359, 5, 13 * W // 32, 29 * W // 64, W // 8, 3 * W // 320,
+slider_x_axes_alpha = Slider(SCREEN, 0, 359, 5, 13 * W // 32, 29 * W // 64, W // 8, 3 * W // 320,
                              BUTTON_COLOR_1_1, BUTTON_COLOR_1_2, TEXT_COLOR_1)
-slider_y_axes_alpha = Slider(screen, 0, 359, 5, 13 * W // 32, 31 * W // 64, W // 8, 3 * W // 320,
+slider_y_axes_alpha = Slider(SCREEN, 0, 359, 5, 13 * W // 32, 31 * W // 64, W // 8, 3 * W // 320,
                              BUTTON_COLOR_1_1, BUTTON_COLOR_1_2, TEXT_COLOR_1)
-slider_z_axes_alpha = Slider(screen, 0, 359, 5, 13 * W // 32, 33 * W // 64, W // 8, 3 * W // 320,
+slider_z_axes_alpha = Slider(SCREEN, 0, 359, 5, 13 * W // 32, 33 * W // 64, W // 8, 3 * W // 320,
                              BUTTON_COLOR_1_1, BUTTON_COLOR_1_2, TEXT_COLOR_1)
-slider_dot_x_pos = Slider(screen, -4, 4, 1, 49 * W // 64, 29 * W // 64, 3 * W // 16, 3 * W // 384,
+slider_dot_x_pos = Slider(SCREEN, -4, 4, 1, 49 * W // 64, 29 * W // 64, 3 * W // 16, 3 * W // 384,
                           BUTTON_COLOR_2_1, BUTTON_COLOR_2_2, TEXT_COLOR_2)
-slider_dot_y_pos = Slider(screen, -4, 4, 1, 49 * W // 64, 31 * W // 64, 3 * W // 16, 3 * W // 384,
+slider_dot_y_pos = Slider(SCREEN, -4, 4, 1, 49 * W // 64, 31 * W // 64, 3 * W // 16, 3 * W // 384,
                           BUTTON_COLOR_2_1, BUTTON_COLOR_2_2, TEXT_COLOR_2)
-slider_dot_z_pos = Slider(screen, -4, 4, 1, 49 * W // 64, 33 * W // 64, 3 * W // 16, 3 * W // 384,
+slider_dot_z_pos = Slider(SCREEN, -4, 4, 1, 49 * W // 64, 33 * W // 64, 3 * W // 16, 3 * W // 384,
                           BUTTON_COLOR_2_1, BUTTON_COLOR_2_2, TEXT_COLOR_2)
 slider_x_axes_alpha.set_controller_pos_from_value(330)
 slider_y_axes_alpha.set_controller_pos_from_value(90)
@@ -235,9 +237,9 @@ class Axes:
                 pygame.draw.circle(self.surface, self.axes_color, pos, self.thickness)
 
 
-x_axes = Axes(screen, 9 * W // 32, 9 * W // 32, W // 4, AXES_THICKNESS, AXES_COLOR, AXES_MIN_COLOR, AXES_MAX_COLOR)
-y_axes = Axes(screen, 9 * W // 32, 9 * W // 32, W // 4, AXES_THICKNESS, AXES_COLOR, AXES_MIN_COLOR, AXES_MAX_COLOR)
-z_axes = Axes(screen, 9 * W // 32, 9 * W // 32, W // 4, AXES_THICKNESS, AXES_COLOR, AXES_MIN_COLOR, AXES_MAX_COLOR)
+x_axes = Axes(SCREEN, 9 * W // 32, 9 * W // 32, W // 4, AXES_THICKNESS, AXES_COLOR, AXES_MIN_COLOR, AXES_MAX_COLOR)
+y_axes = Axes(SCREEN, 9 * W // 32, 9 * W // 32, W // 4, AXES_THICKNESS, AXES_COLOR, AXES_MIN_COLOR, AXES_MAX_COLOR)
+z_axes = Axes(SCREEN, 9 * W // 32, 9 * W // 32, W // 4, AXES_THICKNESS, AXES_COLOR, AXES_MIN_COLOR, AXES_MAX_COLOR)
 
 
 class DotRect:
@@ -298,10 +300,10 @@ class DotRect:
 
 
 def work_on_input(input_index):
+    user_inputs_list = os.listdir(USER_INPUTS_DIR)
     input_index += 1
-    if input_index >= len(os.listdir(USER_INPUTS_DIR)):
-        input_index = 0
-    input_data = pandas.read_csv(f"{USER_INPUTS_DIR}/{os.listdir(USER_INPUTS_DIR)[input_index]}")
+    if input_index == len(user_inputs_list): input_index = 0
+    input_data = pandas.read_csv(f"{USER_INPUTS_DIR}/{user_inputs_list[input_index]}")
     input_data_dict = input_data.to_dict()
     new_max_value = int(input_data_dict["maximum value"][0])
     new_x_axes_alpha = int(input_data_dict["x axes angle"][0])
@@ -329,7 +331,7 @@ def save_as_output(dot_rect_num, connections_with_nums, x_positions, y_positions
     y_axes_angle_list = [str(y_axes_alpha)]
     z_axes_angle_list = [str(z_axes_alpha)]
     max_value_list = [str(max_value)]
-    for n in range(dot_rect_num - 1):
+    for _ in range(dot_rect_num - 1):
         x_axes_angle_list.append(None)
         y_axes_angle_list.append(None)
         z_axes_angle_list.append(None)
@@ -346,8 +348,7 @@ def save_as_output(dot_rect_num, connections_with_nums, x_positions, y_positions
         "maximum value": max_value_list
     })
     output_no = 1
-    while f"output_{output_no}.csv" in os.listdir(OUTPUTS_DIR):
-        output_no += 1
+    while f"output_{output_no}.csv" in os.listdir(OUTPUTS_DIR): output_no += 1
     output_file_path = os.path.join(OUTPUTS_DIR, f"output_{output_no}.csv")
     dataframe.to_csv(output_file_path, index=False)
 
@@ -407,14 +408,14 @@ def mouse_on_graph_area():
 
 current_input_index = 0
 
-text_dot_position_x_surf = gui_font_large.render("x:", True, TEXT_COLOR_2)
+text_dot_position_x_surf = GUI_FONT_LARGE.render("x:", True, TEXT_COLOR_2)
 text_dot_position_x_rect = text_dot_position_x_surf.get_rect(midleft=(47 * W // 64, 29 * W // 64))
-text_dot_position_y_surf = gui_font_large.render("y:", True, TEXT_COLOR_2)
+text_dot_position_y_surf = GUI_FONT_LARGE.render("y:", True, TEXT_COLOR_2)
 text_dot_position_y_rect = text_dot_position_y_surf.get_rect(midleft=(47 * W // 64, 31 * W // 64))
-text_dot_position_z_surf = gui_font_large.render("z:", True, TEXT_COLOR_2)
+text_dot_position_z_surf = GUI_FONT_LARGE.render("z:", True, TEXT_COLOR_2)
 text_dot_position_z_rect = text_dot_position_z_surf.get_rect(midleft=(47 * W // 64, 33 * W // 64))
 
-dot_rects = [DotRect(screen, RECT_WIDTH,
+dot_rects = [DotRect(SCREEN, RECT_WIDTH,
                      RECT_COLOR_1_1, RECT_COLOR_1_2, RECT_COLOR_2_1, RECT_COLOR_2_2, RECT_COLOR_3_1, RECT_COLOR_3_2)]
 dot_rects, chosen_dot_rect = update_dot_rects(dot_rects)
 
@@ -460,7 +461,7 @@ while True:
         slider_dot_y_pos.update_min_max_sequence_values(maximum_value)
         slider_dot_z_pos.update_min_max_sequence_values(maximum_value)
 
-    if button_get_input.is_clicked() and len(os.listdir(OUTPUTS_DIR)) > 0:
+    if button_get_input.is_clicked() and len(os.listdir(USER_INPUTS_DIR)) > 0:
         worked_input_list, current_input_index = work_on_input(current_input_index)
         # maximum value
         maximum_value = worked_input_list[0]
@@ -472,7 +473,7 @@ while True:
         # dot rects and 3d positions
         dot_rects = []
         for i in range(len(worked_input_list[4])):
-            new_dot_rect = DotRect(screen, RECT_WIDTH, RECT_COLOR_1_1, RECT_COLOR_1_2,
+            new_dot_rect = DotRect(SCREEN, RECT_WIDTH, RECT_COLOR_1_1, RECT_COLOR_1_2,
                                    RECT_COLOR_2_1, RECT_COLOR_2_2, RECT_COLOR_3_1, RECT_COLOR_3_2)
             new_dot_rect.dot_3d_pos = worked_input_list[4][i]
             dot_rects.append(new_dot_rect)
@@ -513,7 +514,7 @@ while True:
                        slider_y_axes_alpha.calculate_value(), slider_z_axes_alpha.calculate_value(), maximum_value)
 
     if button_new_dot.is_clicked():
-        dot_rects.append(DotRect(screen, RECT_WIDTH, RECT_COLOR_1_1, RECT_COLOR_1_2,
+        dot_rects.append(DotRect(SCREEN, RECT_WIDTH, RECT_COLOR_1_1, RECT_COLOR_1_2,
                                  RECT_COLOR_2_1, RECT_COLOR_2_2, RECT_COLOR_3_1, RECT_COLOR_3_2))
         dot_rects, chosen_dot_rect = update_dot_rects(dot_rects)
         update_slider_values([slider_dot_x_pos, slider_dot_y_pos, slider_dot_z_pos], (0, 0, 0))
@@ -541,7 +542,7 @@ while True:
         slider_max_value.set_controller_pos_from_value(4)
         showing_graph = True
         showing_dots = True
-        dot_rects = [DotRect(screen, RECT_WIDTH,
+        dot_rects = [DotRect(SCREEN, RECT_WIDTH,
                              RECT_COLOR_1_1, RECT_COLOR_1_2, RECT_COLOR_2_1, RECT_COLOR_2_2, RECT_COLOR_3_1,
                              RECT_COLOR_3_2)]
         dot_rects, chosen_dot_rect = update_dot_rects(dot_rects)
@@ -584,7 +585,7 @@ while True:
     slider_dot_x_pos.movement()
     slider_dot_y_pos.movement()
     slider_dot_z_pos.movement()
-    text_dot_position_surf = gui_font_large.render(f"({slider_dot_x_pos.calculate_value()}, "
+    text_dot_position_surf = GUI_FONT_LARGE.render(f"({slider_dot_x_pos.calculate_value()}, "
                                                    f"{slider_dot_y_pos.calculate_value()}, "
                                                    f"{slider_dot_z_pos.calculate_value()})",
                                                    True, TEXT_COLOR_2)
@@ -610,20 +611,20 @@ while True:
 
     # # # GUI # # #
 
-    text_max_values_surf = gui_font_large.render(f"max:  ± {maximum_value}",
+    text_max_values_surf = GUI_FONT_LARGE.render(f"max:  ± {maximum_value}",
                                                  True, TEXT_COLOR_1)
     text_max_values_rect = text_max_values_surf.get_rect(center=(3 * W // 32, 31 * W // 64))
-    text_x_axes_tangent_surf = gui_font_large.render(f"x:  {slider_x_axes_alpha.calculate_value()}°",
+    text_x_axes_tangent_surf = GUI_FONT_LARGE.render(f"x:  {slider_x_axes_alpha.calculate_value()}°",
                                                      True, TEXT_COLOR_1)
     text_x_axes_tangent_rect = text_x_axes_tangent_surf.get_rect(midright=(25 * W // 64, 29 * W // 64))
-    text_y_axes_tangent_surf = gui_font_large.render(f"y:  {slider_y_axes_alpha.calculate_value()}°",
+    text_y_axes_tangent_surf = GUI_FONT_LARGE.render(f"y:  {slider_y_axes_alpha.calculate_value()}°",
                                                      True, TEXT_COLOR_1)
     text_y_axes_tangent_rect = text_y_axes_tangent_surf.get_rect(midright=(25 * W // 64, 31 * W // 64))
-    text_z_axes_tangent_surf = gui_font_large.render(f"z:  {slider_z_axes_alpha.calculate_value()}°",
+    text_z_axes_tangent_surf = GUI_FONT_LARGE.render(f"z:  {slider_z_axes_alpha.calculate_value()}°",
                                                      True, TEXT_COLOR_1)
     text_z_axes_tangent_rect = text_z_axes_tangent_surf.get_rect(midright=(25 * W // 64, 33 * W // 64))
 
-    screen.fill(BG_COLOR)
+    SCREEN.fill(BG_COLOR)
 
     if showing_graph:
         y_axes.draw()
@@ -632,11 +633,11 @@ while True:
 
     if showing_dots:
         for connection in dot_rect_connections:
-            pygame.draw.line(screen, DOT_COLOR, connection[0].dot_2d_pos, connection[1].dot_2d_pos, AXES_THICKNESS)
+            pygame.draw.line(SCREEN, DOT_COLOR, connection[0].dot_2d_pos, connection[1].dot_2d_pos, AXES_THICKNESS)
         for dot_rect in [d_rect for d_rect in dot_rects if d_rect != chosen_dot_rect]:
-            pygame.draw.circle(screen, DOT_COLOR, dot_rect.dot_2d_pos, AXES_THICKNESS * 2)
+            pygame.draw.circle(SCREEN, DOT_COLOR, dot_rect.dot_2d_pos, AXES_THICKNESS * 2)
         if chosen_dot_rect is not None:
-            pygame.draw.circle(screen, DOT_CHOSEN_COLOR, chosen_dot_rect.dot_2d_pos, AXES_THICKNESS * 2)
+            pygame.draw.circle(SCREEN, DOT_CHOSEN_COLOR, chosen_dot_rect.dot_2d_pos, AXES_THICKNESS * 2)
 
     if mouse_on_graph_area():
         if showing_graph:
@@ -655,30 +656,30 @@ while True:
         slider_x_axes_alpha.draw()
         slider_y_axes_alpha.draw()
         slider_z_axes_alpha.draw()
-        screen.blit(text_max_values_surf, text_max_values_rect)
-        screen.blit(text_x_axes_tangent_surf, text_x_axes_tangent_rect)
-        screen.blit(text_y_axes_tangent_surf, text_y_axes_tangent_rect)
-        screen.blit(text_z_axes_tangent_surf, text_z_axes_tangent_rect)
+        SCREEN.blit(text_max_values_surf, text_max_values_rect)
+        SCREEN.blit(text_x_axes_tangent_surf, text_x_axes_tangent_rect)
+        SCREEN.blit(text_y_axes_tangent_surf, text_y_axes_tangent_rect)
+        SCREEN.blit(text_z_axes_tangent_surf, text_z_axes_tangent_rect)
 
-    pygame.draw.rect(screen, BG_PANEL_COLOR, bg_panel_rect)
+    pygame.draw.rect(SCREEN, BG_PANEL_COLOR, bg_panel_rect)
 
     if chosen_dot_rect is not None:
         slider_dot_x_pos.draw()
         slider_dot_y_pos.draw()
         slider_dot_z_pos.draw()
-        screen.blit(text_dot_position_x_surf, text_dot_position_x_rect)
-        screen.blit(text_dot_position_y_surf, text_dot_position_y_rect)
-        screen.blit(text_dot_position_z_surf, text_dot_position_z_rect)
-        screen.blit(text_dot_position_surf, text_dot_position_rect)
+        SCREEN.blit(text_dot_position_x_surf, text_dot_position_x_rect)
+        SCREEN.blit(text_dot_position_y_surf, text_dot_position_y_rect)
+        SCREEN.blit(text_dot_position_z_surf, text_dot_position_z_rect)
+        SCREEN.blit(text_dot_position_surf, text_dot_position_rect)
     button_new_dot.draw(None)
     button_remove.draw(None)
     for connection in dot_rect_connections:
         pygame.draw.line(
-            screen, TEXT_COLOR_2, connection[0].body_rect.center, connection[1].body_rect.center, AXES_THICKNESS)
+            SCREEN, TEXT_COLOR_2, connection[0].body_rect.center, connection[1].body_rect.center, AXES_THICKNESS)
     for dot_rect in dot_rects:
         dot_rect.draw()
 
     # # # # # # #
 
-    clock.tick(60)
+    CLOCK.tick(60)
     pygame.display.update()

@@ -26,8 +26,9 @@ RECT_COLOR_3_1, RECT_COLOR_3_2 = (79, 79, 79), (87, 87, 87)
 AXES_COLOR, AXES_MIN_COLOR, AXES_MAX_COLOR = (95, 95, 95), (127, 127, 191), (191, 127, 127)
 DOT_COLOR, DOT_CHOSEN_COLOR = (191, 63, 63), (223, 127, 0)
 
-OUTPUTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'outputs')
-USER_INPUTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'user_inputs')
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+OUTPUTS_DIR = os.path.join(SCRIPT_DIR, 'outputs')
+USER_INPUTS_DIR = os.path.join(SCRIPT_DIR, 'user_inputs')
 
 SCREEN = pygame.display.set_mode((W, 9 * W // 16))
 CLOCK = pygame.time.Clock()

@@ -28,7 +28,6 @@ DOT_COLOR, DOT_CHOSEN_COLOR = (191, 63, 63), (223, 127, 0)
 
 OUTPUTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'outputs')
 USER_INPUTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'user_inputs')
-# if not os.path.exists(OUTPUTS_DIR): os.makedirs(OUTPUTS_DIR)
 
 SCREEN = pygame.display.set_mode((W, 9 * W // 16))
 CLOCK = pygame.time.Clock()

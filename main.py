@@ -16,6 +16,9 @@ RECT_COLOR_3_1, RECT_COLOR_3_2 = (79, 79, 79), (87, 87, 87)
 AXES_COLOR, AXES_MIN_COLOR, AXES_MAX_COLOR = (95, 95, 95), (127, 127, 191), (191, 127, 127)
 DOT_COLOR, DOT_CHOSEN_COLOR = (191, 63, 63), (223, 127, 0)
 
+OUTPUTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'outputs')
+USER_INPUTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'user_inputs')
+
 AXES_LENGTH, AXES_THICKNESS = W // 4, W // 256
 GRAPH_CENTER_X, GRAPH_CENTER_Y = 9 * W // 32, 9 * W // 32
 RECTS_CENTER_X, RECTS_CENTER_Y = 25 * W // 32, 3 * W // 16
@@ -296,9 +299,9 @@ class DotRect:
 
 def work_on_input(input_index):
     input_index += 1
-    if input_index >= len(os.listdir('user_inputs')):
+    if input_index >= len(os.listdir(USER_INPUTS_DIR)):
         input_index = 0
-    input_data = pandas.read_csv(f"user_inputs/{os.listdir('user_inputs')[input_index]}")
+    input_data = pandas.read_csv(f"{USER_INPUTS_DIR}/{os.listdir(USER_INPUTS_DIR)[input_index]}")
     input_data_dict = input_data.to_dict()
     new_max_value = int(input_data_dict["maximum value"][0])
     new_x_axes_alpha = int(input_data_dict["x axes angle"][0])
@@ -343,13 +346,10 @@ def save_as_output(dot_rect_num, connections_with_nums, x_positions, y_positions
         "maximum value": max_value_list
     })
     output_no = 1
-    found_empty_no = False
-    while not found_empty_no:
-        if f"the_output_{output_no}.csv" in os.listdir("outputs"):
-            output_no += 1
-        else:
-            found_empty_no = True
-    dataframe.to_csv(f"outputs/the_output_{output_no}.csv", index=False)
+    while f"output_{output_no}.csv" in os.listdir(OUTPUTS_DIR):
+        output_no += 1
+    output_file_path = os.path.join(OUTPUTS_DIR, f"output_{output_no}.csv")
+    dataframe.to_csv(output_file_path, index=False)
 
 
 def produce_2d_pos_from_3d_pos(x, y, z, x_alpha, y_alpha, z_alpha, max_value):
@@ -460,7 +460,7 @@ while True:
         slider_dot_y_pos.update_min_max_sequence_values(maximum_value)
         slider_dot_z_pos.update_min_max_sequence_values(maximum_value)
 
-    if button_get_input.is_clicked() and len(os.listdir('user_inputs')) > 0:
+    if button_get_input.is_clicked() and len(os.listdir(OUTPUTS_DIR)) > 0:
         worked_input_list, current_input_index = work_on_input(current_input_index)
         # maximum value
         maximum_value = worked_input_list[0]
